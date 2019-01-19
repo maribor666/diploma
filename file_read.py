@@ -4,32 +4,33 @@ from PIL import Image, ImageTk
 import os
 
 class Window(tk.Frame):
-    def __init__(self, master=None):
-        tk.Frame.__init__(self, master)
-        menu = tk.Menu(self.master)
-        master.config(menu=menu)
-        file_menu = tk.Menu(menu)
-        file_menu.add_command(label="Exit", command=self.quit)
-        file_menu.add_command(label="Open", command=self.openFile)
-        menu.add_cascade(label="File", menu=file_menu)
-        analyze = tk.Menu(menu)
-        self.canvas = tk.Canvas(self)
-        self.canvas.pack(fill=tk.BOTH, expand=True)
-        self.image = None
+	def __init__(self, master=None):
+		tk.Frame.__init__(self, master)
+		menu = tk.Menu(self.master)
+		master.config(menu=menu)
+		file_menu = tk.Menu(menu)
+		file_menu.add_command(label="Exit", command=self.quit)
+		file_menu.add_command(label="Open", command=self.openFile)
+		menu.add_cascade(label="File", menu=file_menu)
+		analyze = tk.Menu(menu)
+		self.canvas = tk.Canvas(self)
+		self.canvas.pack(fill=tk.BOTH, expand=True)
+		self.image = None
 
-    def openFile(self):
-        filename = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select BMP File", filetypes=[("BMP Files","*.bmp")])
-        if not filename:
-            return
-        b_string = get_binary_sting(filename)
-        img = create_image(b_string)
-        img.save('./test1.bmp')
-        load = Image.open(filename)
-        w, h = load.size
-        self.render = ImageTk.PhotoImage(load)
-        if self.image is not None:
-            self.canvas.delete(self.image)
-        self.image = self.canvas.create_image((w / 2, h / 2), image=self.render)
+	def openFile(self):
+		filename = filedialog.askopenfilename(initialdir=os.getcwd())
+		if not filename:
+			return
+		b_string = get_binary_sting(filename)
+		img = create_image(b_string)
+		img.save('./test1.bmp')
+		load = Image.open('test1.bmp')
+		w, h = load.size
+		self.render = ImageTk.PhotoImage(load)
+		if self.image is not None:
+			self.canvas.delete(self.image)
+		self.image = self.canvas.create_image((w / 2, h / 2), image=self.render)
+		os.remove('test1.bmp')
 
 def main():
 	root = tk.Tk()
@@ -45,9 +46,12 @@ def create_image(b_string):
 	pixels = img.load()
 	for i in range(img.size[0]):
 		for j in range(img.size[1]):
-			bit = bin_iter.__next__()
+			try:
+				bit = bin_iter.__next__()
+			except StopIteration:
+				return img
 			if bit == '1':
-				pixels[i , j] = 1
+				pixels[i, j] = 1
 	return img
 
 
