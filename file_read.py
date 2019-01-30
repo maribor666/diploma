@@ -30,7 +30,7 @@ class Window(tk.Frame):
 		if self.image is not None:
 			self.canvas.delete(self.image)
 		self.image = self.canvas.create_image((w / 2, h / 2), image=self.render)
-		os.remove('test1.bmp')
+
 
 def main():
 	root = tk.Tk()
@@ -44,14 +44,14 @@ def create_image(b_string):
 	bin_iter = iter(b_string)
 	img = Image.new(mode='1', size = (640, 480))
 	pixels = img.load()
-	for i in range(img.size[0]):
-		for j in range(img.size[1]):
+	for i in range(img.size[1]):
+		for j in range(img.size[0]):
 			try:
 				bit = bin_iter.__next__()
 			except StopIteration:
 				return img
 			if bit == '1':
-				pixels[i, j] = 1
+				pixels[j, i] = 1
 	return img
 
 
